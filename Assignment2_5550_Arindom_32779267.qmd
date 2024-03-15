@@ -1,0 +1,73 @@
+---
+title: "ETC5550 Assignment 2"
+author: "Arindom Baruah (32779267)"
+date: "2024-03-22"
+quarto-required: ">=1.3.0"
+format:
+    html:
+        output-file: assign02-submission.html
+        css: "assignment.css"
+execute: 
+  echo: false
+  message: false
+  warning: false
+number-sections: true
+---
+
+# Libraries used
+
+```{r}
+#| echo: TRUE
+library(fpp3)
+library(tidyverse)
+library(kableExtra)
+```
+
+# Glimpse of the data
+
+```{r}
+#| echo: false
+get_my_data <- function(student_id) {
+  set.seed(student_id)
+  all_data <- fill_gaps(readr::read_rds("https://bit.ly/monashretaildata"))
+  while(TRUE) {
+    retail <- filter(all_data, `Series ID` == sample(`Series ID`, 1)) 
+    if(!any(is.na(retail$Turnover))) return(retail)
+  }
+}
+# Replace the argument with your student ID
+retail <- get_my_data(32779267)
+```
+
+
+Once we have obtained our data, let us take a quick glimpse of the data as illustrated by @tbl-data. 
+
+```{r}
+#| label: tbl-data
+#| tbl-cap: "Sample of the current retail data"
+
+retail %>% head() %>% kbl()
+```
+
+# Exercises
+
+## Plotting of timeseries
+
+Let us observe the time series data for the turnover generated.
+
+```{r}
+#| label: fig-turnover
+#| fig-cap: "Retailing turnover in Australia over time"
+retail %>% autoplot(Turnover) + labs(x = "Date",y = "Turnover (mil $)",title="Retailing turnover in Australia over time",caption = "Source: Australian Bureau of Statistics") + theme_minimal()
+```
+:::{.callout-note}
+
+Based on @fig-turnover we can observe the following details in the timeseries plot:
+
+1. There appears to be a seasonality in the plot with a spike being observed on every January of a year. __The seasonality additionally appears to be consistent throughout the plot.__
+
+2. The amplitude of the spikes observed in the data appear to be increasing with time. __This indicates that the variation in the data is multiplicative in nature.__
+
+3. There appears to be an __outlier in the data during the year of 2020.__ While on each January, we expect a rise in turnover, however, in the year of January 2020, the turnover was considerably lower than all the other years. This is expected to be caused due to __shutting down of businesses and their activities in the initial part of the pandemic.__
+
+:::
