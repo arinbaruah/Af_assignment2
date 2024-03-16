@@ -58,16 +58,19 @@ Let us observe the time series data for the turnover generated.
 ```{r}
 #| label: fig-turnover
 #| fig-cap: "Retailing turnover in Australia over time"
-retail %>% autoplot(Turnover) + labs(x = "Date",y = "Turnover (mil $)",title="Retailing turnover in Australia over time",caption = "Source: Australian Bureau of Statistics") + theme_minimal()
+retail %>% autoplot(Turnover) + labs(x = "Date",y = "Turnover (mil $)",title="Retailing turnover in Australia over time",caption = "Source: Australian Bureau of Statistics") + theme(plot.title = element_text(hjust = 0.5)) + theme_minimal()
 ```
 :::{.callout-note}
+# Key takeaway
 
 Based on @fig-turnover we can observe the following details in the timeseries plot:
 
 1. There appears to be a seasonality in the plot with a spike being observed on every January of a year. __The seasonality additionally appears to be consistent throughout the plot.__
 
-2. The amplitude of the spikes observed in the data appear to be increasing with time. __This indicates that the variation in the data is multiplicative in nature.__
+2. The amplitude of the spikes observed in the data appear to be increasing with time. __This indicates that the variation in seasonality of the data is multiplicative in nature.__
 
-3. There appears to be an __outlier in the data during the year of 2020.__ While on each January, we expect a rise in turnover, however, in the year of January 2020, the turnover was considerably lower than all the other years. This is expected to be caused due to __shutting down of businesses and their activities in the initial part of the pandemic.__
+3. The plot also indicates the presence of an __additive trend__ in the data with overall turnover increasing every year except for the year of 2020 in a linear fashion. 
+
+4. There appears to be an __outlier in the data during the year of 2020.__ While on each January, we expect a rise in turnover, however, in the year of January 2020, the turnover was considerably lower than all the other years. This is expected to be caused due to __shutting down of businesses and their activities in the initial part of the pandemic.__
 
 :::
