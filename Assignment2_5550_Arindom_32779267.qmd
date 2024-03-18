@@ -22,6 +22,7 @@ library(fpp3)
 library(tidyverse)
 library(kableExtra)
 library(plotly)
+library(latex2exp)
 ```
 
 # Glimpse of the data
@@ -52,7 +53,7 @@ retail %>% head() %>% kbl()
 
 # Exercises
 
-## Plotting of timeseries
+## Plotting of timeseries {#sec-plot}
 
 Let us observe the time series data for the turnover generated.
 
@@ -119,8 +120,46 @@ retail %>% gg_subseries(Turnover) + labs(x = "Year",y = "Turnover (mil $)",title
 
 2. The average __retail turnover is observed to be higher for the month of December when compared to the rest of the year.__ As explained previously, the main driver for the boost of retailing turnover in this period is attributed to the festive season which includes Christmas, Boxing Day and the run up to the New Year Eve.
 
-3. A __drop in retail turnover for the months of March, April and May was observed in 2020.__ This can be attributed to the lockdowns set in place when the pandemic outburst occurred.
+3. A __drop in retail turnover for the months of March, April and May was observed in 2020.__ This can be attributed to the lockdowns set in place when the pandemic outbreak was first experienced.
 :::
 
+## Box-Cox transformation of the data
+
+```{r}
+#| label: fig-transform
+#| fig-cap: "Transformation of the annual retailing turnover data using Box-Cox method"
+lambda <- retail |>
+  features(Turnover, features = guerrero) |>
+  pull(lambda_guerrero)
+
+retail |>
+  autoplot(box_cox(Turnover, lambda)) +
+  labs(y = "Turnover (mil $)",x = "Timeline",
+       title = latex2exp::TeX(paste0(
+         "Transformed annual retailing turnover with $\\lambda$ = ",
+         round(lambda,2)))) + theme_minimal()
+```
+
+:::{.callout-note}
+# Key takeway
+
+@fig-transform illustrates the Box-Cox transformation of the annual retailing turnover in Australia across a period between 1982-2022. The reason for performing the transformation with the current value of $\lambda$ is as follows:
+
+1. Transformation is done to take care of the multiplicative variation of seasonality in the data as discussed in @sec-plot of retailing turnover. In order to study the timeseries further, we want to work with a timeseries containing a homogeneous composition of seasonal variations.
+
+2. The Box-Cox transformation was performed through the Guerrero optimisation to obtain the required value of the parameter $\lambda$. A slightly negative value of $\lambda$ indicates an inverse transformation was applied.
+
+3. Through @fig-transform, we can observe that the annual spikes in retailing turnover during the period between December-January is fairly similar in all the years except for the year of 2020.
+
+
+:::
+
+## STL decomposition of the timeseries data
+
+```{r}
+decomp_retail <- retail %>% model(stl = STL(Turnover ~ trend(window = 9) + season(window = 11)))  
+
+decomp_retail %>% components() %>% autoplot()
+```
 
 

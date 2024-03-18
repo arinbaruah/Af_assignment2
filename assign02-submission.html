@@ -73,6 +73,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="Assignment2_5550_Arindom_32779267_files/libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="Assignment2_5550_Arindom_32779267_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="assignment.css">
 </head>
@@ -118,7 +120,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fpp3)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(latex2exp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="glimpse-of-the-data" class="level1" data-number="2">
@@ -191,8 +194,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="exercises" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Exercises</h1>
-<section id="plotting-of-timeseries" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="plotting-of-timeseries"><span class="header-section-number">3.1</span> Plotting of timeseries</h2>
+<section id="sec-plot" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="sec-plot"><span class="header-section-number">3.1</span> Plotting of timeseries</h2>
 <p>Let us observe the time series data for the turnover generated.</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -283,8 +286,47 @@ Key takeaway
 <ol type="1">
 <li><p>As already observed in <a href="#sec-season">Section&nbsp;3.2</a>, the plot suggests that the <strong>retailing turnover has increased each year from 1990 to 2022.</strong></p></li>
 <li><p>The average <strong>retail turnover is observed to be higher for the month of December when compared to the rest of the year.</strong> As explained previously, the main driver for the boost of retailing turnover in this period is attributed to the festive season which includes Christmas, Boxing Day and the run up to the New Year Eve.</p></li>
-<li><p>A <strong>drop in retail turnover for the months of March, April and May was observed in 2020.</strong> This can be attributed to the lockdowns set in place when the pandemic outburst occurred.</p></li>
+<li><p>A <strong>drop in retail turnover for the months of March, April and May was observed in 2020.</strong> This can be attributed to the lockdowns set in place when the pandemic outbreak was first experienced.</p></li>
 </ol>
+</div>
+</div>
+</section>
+<section id="box-cox-transformation-of-the-data" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="box-cox-transformation-of-the-data"><span class="header-section-number">3.4</span> Box-Cox transformation of the data</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-transform" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="Assignment2_5550_Arindom_32779267_files/figure-html/fig-transform-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption class="figure-caption">Figure&nbsp;4: Transformation of the annual retailing turnover data using Box-Cox method</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Key takeway
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><a href="#fig-transform">Figure&nbsp;4</a> illustrates the Box-Cox transformation of the annual retailing turnover in Australia across a period between 1982-2022. The reason for performing the transformation with the current value of <span class="math inline">\(\lambda\)</span> is as follows:</p>
+<ol type="1">
+<li><p>Transformation is done to take care of the multiplicative variation of seasonality in the data as discussed in <a href="#sec-plot">Section&nbsp;3.1</a> of retailing turnover. In order to study the timeseries further, we want to work with a timeseries containing a homogeneous composition of seasonal variations.</p></li>
+<li><p>The Box-Cox transformation was performed through the Guerrero optimisation to obtain the required value of the parameter <span class="math inline">\(\lambda\)</span>. A slightly negative value of <span class="math inline">\(\lambda\)</span> indicates an inverse transformation was applied.</p></li>
+<li><p>Through <a href="#fig-transform">Figure&nbsp;4</a>, we can observe that the annual spikes in retailing turnover during the period between December-January is fairly similar in all the years except for the year of 2020.</p></li>
+</ol>
+</div>
+</div>
+</section>
+<section id="stl-decomposition-of-the-timeseries-data" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="stl-decomposition-of-the-timeseries-data"><span class="header-section-number">3.5</span> STL decomposition of the timeseries data</h2>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="Assignment2_5550_Arindom_32779267_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
