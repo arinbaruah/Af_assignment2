@@ -125,6 +125,49 @@ retail %>% gg_subseries(Turnover) + labs(x = "Year",y = "Turnover (mil $)",title
 
 ## Box-Cox transformation of the data
 
+### Estimating the value of $\lambda$
+
+In order to apply the Box-Cox transformation, we are required to obtain the appropriate value of the parameter $\lambda$ which will allow us to analyse the timeseries data with the seasonal variations being equal at all levels, thereby transforming the multiplicative variation in the data into an additive variation.
+
+
+Let us first attempt to do this by performing a log transformation through $\lambda = 0$.
+
+```{r}
+#| label: fig-transform-log
+#| fig-cap: "Transformation of the annual retailing turnover by Log transformation"
+lambda = 0 # Log transformation
+
+retail |>
+  autoplot(box_cox(Turnover, 0)) +
+  labs(y = "Log of Turnover (mil $)",x = "Timeline",
+       title = latex2exp::TeX(paste0(
+         "Transformed annual retailing turnover with $\\lambda$ = ",
+         round(lambda,2)))) + theme_minimal()
+```
+:::{.callout-note}
+
+@fig-transform-log illustrates the timeseries data for retailing turnover after being transformed through the Box-Cox transformation on the log scale. Here are some key observations:
+
+1. We observe that unlike the original data, the variation in seasonality of the Log transformed data was much more similar through the timeseries.
+
+2. Using the Log transformation, the datapoints with lower seasonality variation (data in the initial time period) was stretched to larger variations while the datapoints with higher seasonality variation (data in the later time period) was compressed to relatively smaller variations.
+
+3. Since the variations are fairly similar throughout the entire period of the data, we can consider the current data to contain an additive variation of seasonality.
+
+4. However, it is difficult to assess whether the log transformation may have affected the variation too strongly. Hence, we shall try a range of other $\lambda$ values to check the optimal value of the parameter.
+
+:::
+
+
+
+```{r}
+
+retail %>% autoplot(Turnover^0.09) + labs(x = "Timeline",
+                                          y = "Log transformed retail turnover in mil $",
+                                          title = "Log transformation of the retailing turnover")
+```
+
+
 ```{r}
 #| label: fig-transform
 #| fig-cap: "Transformation of the annual retailing turnover data using Box-Cox method"
@@ -145,7 +188,7 @@ retail |>
 
 @fig-transform illustrates the Box-Cox transformation of the annual retailing turnover in Australia across a period between 1982-2022. The reason for performing the transformation with the current value of $\lambda$ is as follows:
 
-1. Transformation is done to take care of the multiplicative variation of seasonality in the data as discussed in @sec-plot of retailing turnover. In order to study the timeseries further, we want to work with a timeseries containing a homogeneous composition of seasonal variations.
+1. Transformation is done to take care of the multiplicative variation of seasonality in the data as discussed in @sec-plot of retailing turnover. In order to decompose our timeseries data, we will be utilising the STL decomposition. As the requirement for the of this model is an additive variation in the data, hence, we will rely upon the Box-Cox transformation.
 
 2. The Box-Cox transformation was performed through the Guerrero optimisation to obtain the required value of the parameter $\lambda$. A slightly negative value of $\lambda$ indicates an inverse transformation was applied.
 
