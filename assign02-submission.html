@@ -219,7 +219,7 @@ Key takeaway
 <div class="callout-body-container callout-body">
 <p>Based on <a href="#fig-turnover">Figure&nbsp;1</a> we can observe the following details in the timeseries plot:</p>
 <ol type="1">
-<li><p>There appears to be a seasonality in the plot with a spike being observed on every January of a year. <strong>The seasonality additionally appears to be consistent throughout the plot.</strong></p></li>
+<li><p>There appears to be a seasonality in the plot with a spike being observed on every December of a year. <strong>The seasonality additionally appears to be consistent throughout the plot.</strong></p></li>
 <li><p>The amplitude of the spikes observed in the data appear to be increasing with time. <strong>This indicates that the variation in seasonality of the data is multiplicative in nature.</strong></p></li>
 <li><p>The plot also indicates the presence of an <strong>additive trend</strong> in the data with overall turnover increasing every year except for the year of 2020 in a linear fashion.</p></li>
 <li><p>There appears to be an <strong>outlier in the data during the year of 2020</strong> as indicated by the <span style="color:red">red cricle</span>.While on each January of every year, we expect a rise in turnover, however, in the year of January 2020, the turnover was considerably lower than all the other years. This is expected to be caused due to <strong>shutting down of businesses and their activities in the initial part of the pandemic.</strong></p></li>
@@ -296,13 +296,49 @@ Key takeaway
 <section id="estimating-the-value-of-lambda" class="level3" data-number="3.4.1">
 <h3 data-number="3.4.1" class="anchored" data-anchor-id="estimating-the-value-of-lambda"><span class="header-section-number">3.4.1</span> Estimating the value of <span class="math inline">\(\lambda\)</span></h3>
 <p>In order to apply the Box-Cox transformation, we are required to obtain the appropriate value of the parameter <span class="math inline">\(\lambda\)</span> which will allow us to analyse the timeseries data with the seasonal variations being equal at all levels, thereby transforming the multiplicative variation in the data into an additive variation.</p>
-<p>Let us first attempt to do this by performing a log transformation through <span class="math inline">\(\lambda = 0\)</span>.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-sqrt" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="Assignment2_5550_Arindom_32779267_files/figure-html/fig-sqrt-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption class="figure-caption">Figure&nbsp;4: Transformation of the annual retailing turnover by square root transformation</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-sqrt">Figure&nbsp;4</a> illustrates a square root transformation. As we can observe, the <strong>square root transformation appears to be weak in nature</strong>, and hence, not be able to effectively make the variations in seasonality equal.</p>
+<p>Let us now attempt to transform the data using <span class="math inline">\(\lambda = 0.25\)</span></p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-qtr" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="Assignment2_5550_Arindom_32779267_files/figure-html/fig-qtr-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption class="figure-caption">Figure&nbsp;5: Transformation of the annual retailing turnover by 1/4 root transformation</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>As observed in <a href="#fig-qtr">Figure&nbsp;5</a>, the transformation appears to be weak in the lower seasonality variation (towards the early years) as compared to the higher seasonality variation (towards the later years).</p>
+<p>In order to increase the effect of the Box-Cox transformation, we will need to reduce the <span class="math inline">\(\lambda\)</span> value further. Let us try using <span class="math inline">\(\lambda = 0.1\)</span>.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-ten" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="Assignment2_5550_Arindom_32779267_files/figure-html/fig-ten-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption class="figure-caption">Figure&nbsp;6: Transformation of the annual retailing turnover by 10th root transformation</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Based on <a href="#fig-ten">Figure&nbsp;6</a>, it appears that a transformation with <span class="math inline">\(\lambda = 0.1\)</span> has still missed out in the seasonality variation during the early years as there still appears to be some amount of minor differences between the initial seasonality variation and the later seasonality variation.</p>
+<p>Due to the inherent low sensitivity of the <span class="math inline">\(\lambda\)</span> parameter, we can consider that any value lower than 0.1 to have the same effect as when <span class="math inline">\(\lambda = 0\)</span>. This means that the Box-Cox transformation approaches towards a logarithmic transformation.</p>
+<p>Let us attempt to visualise this by performing a log transformation through <span class="math inline">\(\lambda = 0\)</span></p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-transform-log" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="Assignment2_5550_Arindom_32779267_files/figure-html/fig-transform-log-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Figure&nbsp;4: Transformation of the annual retailing turnover by Log transformation</figcaption>
+<figcaption class="figure-caption">Figure&nbsp;7: Transformation of the annual retailing turnover by Log transformation</figcaption>
 </figure>
 </div>
 </div>
@@ -317,26 +353,36 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><a href="#fig-transform-log">Figure&nbsp;4</a> illustrates the timeseries data for retailing turnover after being transformed through the Box-Cox transformation on the log scale. Here are some key observations:</p>
+<p><a href="#fig-transform-log">Figure&nbsp;7</a> illustrates the timeseries data for retailing turnover after being transformed through the Box-Cox transformation on the log scale. Here are some key observations:</p>
 <ol type="1">
 <li><p>We observe that unlike the original data, the variation in seasonality of the Log transformed data was much more similar through the timeseries.</p></li>
 <li><p>Using the Log transformation, the datapoints with lower seasonality variation (data in the initial time period) was stretched to larger variations while the datapoints with higher seasonality variation (data in the later time period) was compressed to relatively smaller variations.</p></li>
-<li><p>Since the variations are fairly similar throughout the entire period of the data, we can consider the current data to contain an additive variation of seasonality.</p></li>
-<li><p>However, it is difficult to assess whether the log transformation may have affected the variation too strongly. Hence, we shall try a range of other <span class="math inline">\(\lambda\)</span> values to check the optimal value of the parameter.</p></li>
+<li><p>Since the variations are fairly similar throughout the entire period of the data, we can consider the transformed data to contain an additive variation of seasonality.</p></li>
+<li><p>Usage of a <strong>log transformation also provides better interpretability as changes in a log value are proportional to changes on the original scale, mulitplied by a factor.</strong></p></li>
 </ol>
 </div>
 </div>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="Assignment2_5550_Arindom_32779267_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
+<p>We can additionally use the Guerrero transformation as a means to automate the process of obtaining a <span class="math inline">\(\lambda\)</span> value. Based on this optimisation technique, a value of <span class="math inline">\(\lambda = -0.09\)</span> was obtained. The corresponding plot upon transformation can be observed in <a href="#fig-transform">Figure&nbsp;8</a>.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-transform" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="Assignment2_5550_Arindom_32779267_files/figure-html/fig-transform-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Figure&nbsp;5: Transformation of the annual retailing turnover data using Box-Cox method</figcaption>
+<figcaption class="figure-caption">Figure&nbsp;8: Transformation of the annual retailing turnover data using Box-Cox method</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="stl-decomposition-of-the-timeseries-data" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="stl-decomposition-of-the-timeseries-data"><span class="header-section-number">3.5</span> STL decomposition of the timeseries data</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-stl" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="Assignment2_5550_Arindom_32779267_files/figure-html/fig-stl-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption class="figure-caption">Figure&nbsp;9: STL decomposition of annual retailing turnover</figcaption>
 </figure>
 </div>
 </div>
@@ -347,25 +393,16 @@ Note
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Key takeway
+Key takeaway
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><a href="#fig-transform">Figure&nbsp;5</a> illustrates the Box-Cox transformation of the annual retailing turnover in Australia across a period between 1982-2022. The reason for performing the transformation with the current value of <span class="math inline">\(\lambda\)</span> is as follows:</p>
+<p>Based on the STL decomposition for the log based transformation done as illustrated by <a href="#fig-stl">Figure&nbsp;9</a>, we observe the following:</p>
 <ol type="1">
-<li><p>Transformation is done to take care of the multiplicative variation of seasonality in the data as discussed in <a href="#sec-plot">Section&nbsp;3.1</a> of retailing turnover. In order to decompose our timeseries data, we will be utilising the STL decomposition. As the requirement for the of this model is an additive variation in the data, hence, we will rely upon the Box-Cox transformation.</p></li>
-<li><p>The Box-Cox transformation was performed through the Guerrero optimisation to obtain the required value of the parameter <span class="math inline">\(\lambda\)</span>. A slightly negative value of <span class="math inline">\(\lambda\)</span> indicates an inverse transformation was applied.</p></li>
-<li><p>Through <a href="#fig-transform">Figure&nbsp;5</a>, we can observe that the annual spikes in retailing turnover during the period between December-January is fairly similar in all the years except for the year of 2020.</p></li>
+<li><p>The trend of the transformed data suggests a <strong>somewhat linear (and hence an additive) rise in the overall annual retailing turnover.</strong></p></li>
+<li><p>The <strong>seasonality of the data is observed to be fairly constant in each year, with a peak appearing during the end of the year as a result of the higher expenditures expected during the festive season.</strong></p></li>
+<li><p>The <strong>remainder plot illustrates an outlier in the data close to the year of 2020. This indicates the underwhelming retailing turnovers due to the outbreak of COVID-19</strong> that resulted in the shutting down of many business activities for a period of few months.</p></li>
 </ol>
-</div>
-</div>
-</section>
-</section>
-<section id="stl-decomposition-of-the-timeseries-data" class="level2" data-number="3.5">
-<h2 data-number="3.5" class="anchored" data-anchor-id="stl-decomposition-of-the-timeseries-data"><span class="header-section-number">3.5</span> STL decomposition of the timeseries data</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="Assignment2_5550_Arindom_32779267_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>

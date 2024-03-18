@@ -69,7 +69,7 @@ retail %>% autoplot(Turnover) + labs(x = "Date",y = "Turnover (mil $)",title="Re
 
 Based on @fig-turnover we can observe the following details in the timeseries plot:
 
-1. There appears to be a seasonality in the plot with a spike being observed on every January of a year. __The seasonality additionally appears to be consistent throughout the plot.__
+1. There appears to be a seasonality in the plot with a spike being observed on every December of a year. __The seasonality additionally appears to be consistent throughout the plot.__
 
 2. The amplitude of the spikes observed in the data appear to be increasing with time. __This indicates that the variation in seasonality of the data is multiplicative in nature.__
 
@@ -129,8 +129,61 @@ retail %>% gg_subseries(Turnover) + labs(x = "Year",y = "Turnover (mil $)",title
 
 In order to apply the Box-Cox transformation, we are required to obtain the appropriate value of the parameter $\lambda$ which will allow us to analyse the timeseries data with the seasonal variations being equal at all levels, thereby transforming the multiplicative variation in the data into an additive variation.
 
+```{r}
+#| label: fig-sqrt
+#| fig-cap: "Transformation of the annual retailing turnover by square root transformation"
+lambda = 0.5 # Square root transformation
 
-Let us first attempt to do this by performing a log transformation through $\lambda = 0$.
+retail |>
+  autoplot(box_cox(Turnover, lambda)) +
+  labs(y = "Square root of Turnover (mil $)",x = "Timeline",
+       title = latex2exp::TeX(paste0(
+         "Transformed annual retailing turnover with $\\lambda$ = ",
+         round(lambda,2)))) + theme_minimal()
+```
+@fig-sqrt illustrates a square root transformation. As we can observe, the __square root transformation appears to be weak in nature__, and hence, not be able to effectively make the variations in seasonality equal.
+
+
+Let us now attempt to transform the data using $\lambda = 0.25$
+
+```{r}
+#| label: fig-qtr
+#| fig-cap: "Transformation of the annual retailing turnover by 1/4 root transformation"
+
+lambda = 0.25 # 1/4th root transformation
+
+retail |>
+  autoplot(box_cox(Turnover, lambda)) +
+  labs(y = "1/4 root of Turnover (mil $)",x = "Timeline",
+       title = latex2exp::TeX(paste0(
+         "Transformed annual retailing turnover with $\\lambda$ = ",
+         round(lambda,2)))) + theme_minimal()
+```
+As observed in @fig-qtr, the transformation appears to be weak in the lower seasonality variation (towards the early years) as compared to the higher seasonality variation (towards the later years). 
+
+In order to increase the effect of the Box-Cox transformation, we will need to reduce the $\lambda$ value further. Let us try using $\lambda = 0.1$.
+
+```{r}
+#| label: fig-ten
+#| fig-cap: "Transformation of the annual retailing turnover by 10th root transformation"
+
+lambda = 0.1 # 1/10th root transformation
+
+retail |>
+  autoplot(box_cox(Turnover, lambda)) +
+  labs(y = "1/10 root of Turnover (mil $)",x = "Timeline",
+       title = latex2exp::TeX(paste0(
+         "Transformed annual retailing turnover with $\\lambda$ = ",
+         round(lambda,2)))) + theme_minimal()
+```
+
+Based on @fig-ten, it appears that a transformation with $\lambda = 0.1$ has still missed out in the seasonality variation during the early years as there still appears to be some amount of minor differences between the initial seasonality variation and the later seasonality variation.
+
+
+Due to the inherent low sensitivity of the $\lambda$ parameter, we can consider that any value lower than 0.1 to have the same effect as when $\lambda = 0$. This means that the Box-Cox transformation approaches towards a logarithmic transformation.
+
+
+Let us attempt to visualise this by performing a log transformation through $\lambda = 0$
 
 ```{r}
 #| label: fig-transform-log
@@ -152,25 +205,18 @@ retail |>
 
 2. Using the Log transformation, the datapoints with lower seasonality variation (data in the initial time period) was stretched to larger variations while the datapoints with higher seasonality variation (data in the later time period) was compressed to relatively smaller variations.
 
-3. Since the variations are fairly similar throughout the entire period of the data, we can consider the current data to contain an additive variation of seasonality.
+3. Since the variations are fairly similar throughout the entire period of the data, we can consider the transformed data to contain an additive variation of seasonality.
 
-4. However, it is difficult to assess whether the log transformation may have affected the variation too strongly. Hence, we shall try a range of other $\lambda$ values to check the optimal value of the parameter.
+4. Usage of a __log transformation also provides better interpretability as changes in a log value are proportional to changes on the original scale, mulitplied by a factor.__
 
 :::
 
-
-
-```{r}
-
-retail %>% autoplot(Turnover^0.09) + labs(x = "Timeline",
-                                          y = "Log transformed retail turnover in mil $",
-                                          title = "Log transformation of the retailing turnover")
-```
-
+We can additionally use the Guerrero transformation as a means to automate the process of obtaining a $\lambda$ value. Based on this optimisation technique, a value of $\lambda = -0.09$ was obtained. The corresponding plot upon transformation can be observed in @fig-transform.
 
 ```{r}
 #| label: fig-transform
 #| fig-cap: "Transformation of the annual retailing turnover data using Box-Cox method"
+
 lambda <- retail |>
   features(Turnover, features = guerrero) |>
   pull(lambda_guerrero)
@@ -183,26 +229,28 @@ retail |>
          round(lambda,2)))) + theme_minimal()
 ```
 
-:::{.callout-note}
-# Key takeway
-
-@fig-transform illustrates the Box-Cox transformation of the annual retailing turnover in Australia across a period between 1982-2022. The reason for performing the transformation with the current value of $\lambda$ is as follows:
-
-1. Transformation is done to take care of the multiplicative variation of seasonality in the data as discussed in @sec-plot of retailing turnover. In order to decompose our timeseries data, we will be utilising the STL decomposition. As the requirement for the of this model is an additive variation in the data, hence, we will rely upon the Box-Cox transformation.
-
-2. The Box-Cox transformation was performed through the Guerrero optimisation to obtain the required value of the parameter $\lambda$. A slightly negative value of $\lambda$ indicates an inverse transformation was applied.
-
-3. Through @fig-transform, we can observe that the annual spikes in retailing turnover during the period between December-January is fairly similar in all the years except for the year of 2020.
-
-
-:::
 
 ## STL decomposition of the timeseries data
 
 ```{r}
-decomp_retail <- retail %>% model(stl = STL(Turnover ~ trend(window = 9) + season(window = 11)))  
-
-decomp_retail %>% components() %>% autoplot()
+#| label: fig-stl
+#| fig-cap: "STL decomposition of annual retailing turnover"
+retail %>% model(STL(box_cox(Turnover,0) ~ trend(window = 31) + 
+                             season(window = 30), robust = TRUE)) %>%
+  components() %>% autoplot() + labs(x = "Timeline",
+                                     y = "Log transformed turnover in mil $",
+                                     title = "STL decomposition of annual retailing turnover")
 ```
 
+:::{.callout-note}
+# Key takeaway
 
+Based on the STL decomposition for the log based transformation done as illustrated by @fig-stl, we observe the following:
+
+1. The trend of the transformed data suggests a __somewhat linear (and hence an additive) rise in the overall annual retailing turnover.__
+
+2. The __seasonality of the data is observed to be fairly constant in each year, with a peak appearing during the end of the year as a result of the higher expenditures expected during the festive season.__
+
+3. The __remainder plot illustrates an outlier in the data close to the year of 2020. This indicates the underwhelming retailing turnovers due to the outbreak of COVID-19__ that resulted in the shutting down of many business activities for a period of few months. 
+
+:::
