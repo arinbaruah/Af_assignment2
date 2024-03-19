@@ -21,7 +21,6 @@ number-sections: true
 library(fpp3)
 library(tidyverse)
 library(kableExtra)
-library(plotly)
 library(latex2exp)
 ```
 
@@ -254,3 +253,14 @@ Based on the STL decomposition for the log based transformation done as illustra
 3. The __remainder plot illustrates an outlier in the data close to the year of 2020. This indicates the underwhelming retailing turnovers due to the outbreak of COVID-19__ that resulted in the shutting down of many business activities for a period of few months. 
 
 :::
+
+
+# Reference
+
+1. __fpp3__: Hyndman R (2023). _fpp3: Data for "Forecasting: Principles and Practice" (3rd Edition)_. R package version 0.5, <https://CRAN.R-project.org/package=fpp3>.
+
+2. __tidyverse__: Wickham H, Averick M, Bryan J, Chang W, McGowan LD, François R, Grolemund G, Hayes A, Henry L, Hester J, Kuhn M, Pedersen TL, Miller E, Bache SM, Müller K, Ooms J, Robinson D, Seidel DP, Spinu V, Takahashi K, Vaughan D, Wilke C, Woo K, Yutani H (2019). “Welcome to the tidyverse.” _Journal of Open Source Software_, *4*(43), 1686. doi:10.21105/joss.01686 <https://doi.org/10.21105/joss.01686>.
+
+3. __kableExtra__: Zhu H (2024). _kableExtra: Construct Complex Table with 'kable' and Pipe Syntax_. R package version 1.4.0, <https://CRAN.R-project.org/package=kableExtra>.
+
+4. __latex2exp__: Meschiari S (2022). _latex2exp: Use LaTeX Expressions in Plots_. R package version 0.9.6, <https://CRAN.R-project.org/package=latex2exp>.
