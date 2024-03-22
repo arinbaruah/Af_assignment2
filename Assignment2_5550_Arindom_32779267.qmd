@@ -22,6 +22,7 @@ library(fpp3)
 library(tidyverse)
 library(kableExtra)
 library(latex2exp)
+library(plotly)
 ```
 
 # Glimpse of the data
@@ -58,8 +59,8 @@ Let us observe the time series data for the turnover generated.
 
 ```{r}
 #| label: fig-turnover
-#| fig-cap: "Retailing turnover in Australia over time"
-retail %>% autoplot(Turnover) + labs(x = "Date",y = "Turnover (mil $)",title="Retailing turnover in Australia over time",caption = "Source: Australian Bureau of Statistics") + geom_point(data = NULL, aes(x = "2020-02-15", y = 50), color = "red", shape = 1, size = 7) + theme_minimal()
+#| fig-cap: "Retailing turnover in Western Australia over time"
+retail %>% autoplot(Turnover) + labs(x = "Date",y = "Turnover (mil $)",title="Retailing turnover in Western Australia over time",caption = "Source: Australian Bureau of Statistics") + geom_point(data = NULL, aes(x = "2020-02-15", y = 50), color = "red", shape = 1, size = 7) + theme_minimal()
 
 
 ```
@@ -81,8 +82,8 @@ Based on @fig-turnover we can observe the following details in the timeseries pl
 
 ```{r}
 #| label: fig-seasonplot
-#| fig-cap: "Variation of retailing turnover within a year in Australia"
-retail %>% gg_season(Turnover) + labs(x = "Month",y = "Turnover (mil $)",title="Variation of retailing turnover within a year in Australia",caption = "Source: Australian Bureau of Statistics")  + theme_minimal() 
+#| fig-cap: "Variation of retailing turnover within a year in Western Australia"
+ggplotly(retail %>% gg_season(Turnover) + labs(x = "Month",y = "Turnover (mil $)",title="Variation of retailing turnover within a year in Western Australia",caption = "Source: Australian Bureau of Statistics")  + theme_minimal())
 
 ```
 :::{.callout-note} 
