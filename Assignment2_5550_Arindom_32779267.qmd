@@ -240,13 +240,13 @@ As the transformation parameter $\lambda$ is not very sensitive to small changes
 
 ```{r}
 #| label: fig-stl
-#| fig-cap: "STL decomposition of annual clothing retailing turnover"
+#| fig-cap: "STL decomposition of annual clothing retailing turnover for Western Australia"
 
 retail %>% model(STL(box_cox(Turnover,0) ~ trend(window = 31) + 
                              season(window = 30), robust = TRUE)) %>%
   components() %>% autoplot() + labs(x = "Timeline",
                                      y = "Log transformed turnover in mil $",
-                                     title = "STL decomposition of annual clothing retailing turnover",
+                                     title = "STL decomposition of annual clothing retailing turnover for Western Australia",
                                      subtitle = "Footwear and personal accessory",
                                      caption = "Source: Australian Bureau of Statistics")
 ```
