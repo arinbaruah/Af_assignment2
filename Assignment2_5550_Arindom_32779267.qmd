@@ -60,7 +60,7 @@ Let us observe the time series data for the turnover generated.
 ```{r}
 #| label: fig-turnover
 #| fig-cap: "Footwear and personal accessory retailing turnover \n in Western Australia over time"
-retail %>% autoplot(Turnover) + labs(x = "Date",y = "Turnover (mil $)",title="Footwear and personal accessory retailing turnover \n in Western Australia over time",caption = "Source: Australian Bureau of Statistics") + geom_point(data = NULL, aes(x = "2020-02-15", y = 50), color = "red", shape = 1, size = 7) + theme_minimal()
+retail %>% autoplot(Turnover) + labs(x = "Timeline (in Months)",y = "Turnover (mil $)",title="Footwear and personal accessory retailing turnover \n in Western Australia over time",caption = "Source: Australian Bureau of Statistics") + geom_point(data = NULL, aes(x = "2020-02-15", y = 50), color = "red", shape = 1, size = 7) + theme_minimal()
 
 
 ```
@@ -136,7 +136,7 @@ lambda = 0.5 # Square root transformation
 
 retail |>
   autoplot(box_cox(Turnover, lambda)) +
-  labs(y = "Square root of Turnover (mil $)",x = "Timeline",
+  labs(y = "Square root of Turnover (mil $)",x = "Timeline (in Months)",
        title = latex2exp::TeX(paste0(
          "Transformed annual retailing turnover with $\\lambda$ = ",
          round(lambda,2))),
@@ -155,7 +155,7 @@ lambda = 0.25 # 1/4th root transformation
 
 retail |>
   autoplot(box_cox(Turnover, lambda)) +
-  labs(y = "1/4 root of Turnover (mil $)",x = "Timeline",
+  labs(y = "1/4 root of Turnover (mil $)",x = "Timeline (in Months)",
        title = latex2exp::TeX(paste0(
          "Transformed annual retailing turnover with $\\lambda$ = ",
          round(lambda,2))),caption = "Source: Australian Bureau of Statistics") + theme_minimal()
@@ -172,7 +172,7 @@ lambda = 0.1 # 1/10th root transformation
 
 retail |>
   autoplot(box_cox(Turnover, lambda)) +
-  labs(y = "1/10 root of Turnover (mil $)",x = "Timeline",
+  labs(y = "1/10 root of Turnover (mil $)",x = "Timeline (in Months)",
        title = latex2exp::TeX(paste0(
          "Transformed annual retailing turnover with $\\lambda$ = ",
          round(lambda,2))),caption = "Source: Australian Bureau of Statistics") + theme_minimal()
@@ -193,7 +193,7 @@ lambda = 0 # Log transformation
 
 retail |>
   autoplot(box_cox(Turnover, 0)) +
-  labs(y = "Log of Turnover (mil $)",x = "Timeline",
+  labs(y = "Log of Turnover (mil $)",x = "Timeline (in Months)",
        title = latex2exp::TeX(paste0(
          "Transformed annual retailing turnover with $\\lambda$ = ",
          round(lambda,2))),caption = "Source: Australian Bureau of Statistics") + theme_minimal()
@@ -227,7 +227,7 @@ lambda <- retail |>
 
 retail |>
   autoplot(box_cox(Turnover, lambda)) +
-  labs(y = "Turnover (mil $)",x = "Timeline",
+  labs(y = "Turnover (mil $)",x = "Timeline (in Months)",
        title = latex2exp::TeX(paste0(
          "Transformed annual retailing turnover with $\\lambda$ = ",
          round(lambda,2))),caption = "Source: Australian Bureau of Statistics") + theme_minimal()
@@ -242,19 +242,23 @@ As the transformation parameter $\lambda$ is not very sensitive to small changes
 #| label: fig-stl
 #| fig-cap: "STL decomposition of annual clothing retailing turnover for Western Australia"
 
-retail %>% model(STL(box_cox(Turnover,0) ~ trend(window = 31) + 
-                             season(window = 30), robust = TRUE)) %>%
-  components() %>% autoplot() + labs(x = "Timeline",
+retail %>% model(STL(box_cox(Turnover,0) ~ trend(window = 13) + 
+                             season(window = "periodic"), robust = TRUE)) %>%
+  components() %>% autoplot() + labs(x = "Timeline (in Months)",
                                      y = "Log transformed turnover in mil $",
                                      title = "STL decomposition of annual clothing retailing turnover for Western Australia",
                                      subtitle = "Footwear and personal accessory",
                                      caption = "Source: Australian Bureau of Statistics")
 ```
 
+In @fig-stl, the two major components which need to be chosen are the trend and the seasonality windows. A trend window for a year (13 months) was used to obtain the trend pattern. For a single seasonality period, the default number of observations chosen to obtain the seasonality pattern is 21 observations. However, using the default value appeared to show a dip in the peaks of the seasonality. Changing the window values to 13,15,17 and 19 did not resolve the issue of the non-uniform seasonality pattern. Effectively, __seasonality was forced into the plot by choosing an infinite period__ for seasonality estimation. This was done by adding the argument of seasonal window to "periodic". 
+
+Since we do not observe any critical patterns of the transformed data to leak into either the trend, seasonality or the remainder, we can consider the current choice of the window parameters as the preferred decomposition for the timeseries in hand.
+
 :::{.callout-note}
 # Key takeaway
 
-Based on the STL decomposition for the log based transformation done as illustrated by @fig-stl, we observe the following:
+Based on the STL decomposition for the log based transformation of the timeseries data, we observe the following:
 
 1. The trend of the transformed data suggests a __somewhat linear (and hence an additive) rise in the overall annual footwear and personal accessory retailing turnover in Western Australia.__
 
